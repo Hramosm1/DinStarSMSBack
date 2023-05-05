@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Categorias {
+  Id_Categoria            BigInt           @id(map: "PK__Categori__CB90334919B2B848")
+  Descripcion             String?          @db.VarChar(25)
+  Estado                  Boolean?
+  Fecha_Registro          DateTime?        @db.DateTime
+  Fecha_Modificacion      DateTime?        @db.DateTime
+  Id_Usuario_Registro     Int?
+  Id_Usuario_Modificacion Int?
+  Procesos_Datos          Procesos_Datos[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model Dinstar {
+  Id_Dinstar              Int?      @db.SmallInt
+  Descripci_n             String?   @map("Descripción") @db.VarChar(50)
+  URL                     String?   @db.VarChar(75)
+  Id_Request              Int?      @db.SmallInt
+  Estado                  Boolean?
+  Fecha_Registro          DateTime? @db.DateTime
+  Fecha_Modificacion      DateTime? @db.DateTime
+  Id_Usuario_Registro     Int?
+  Id_Usuario_Modificacion Int?
+  Capacidad               Int?
+  Request                 Request?  @relation(fields: [Id_Request], references: [Id_Request], onDelete: NoAction, onUpdate: NoAction, map: "fk_IdRequest")
+
+  @@ignore
+}
+
+model Dinstar_Mensajes_sms {
+  Id_Dinstar_Mensajes_sms BigInt           @id(map: "PK__Dinstar___F60CE13F16B8C37C") @default(autoincrement())
+  Telefono                String?          @db.VarChar(15)
+  Texto                   String?          @db.VarChar(250)
+  Id_Proceso_Datos        Int?
+  Id_Tipo_Estado_sms      Int?             @db.SmallInt
+  TaskId                  String?          @db.VarChar(50)
+  Fecha_Registro          DateTime?        @db.DateTime
+  Fecha_Cambio_Estado     DateTime?        @db.DateTime
+  Fecha_Modificacion      DateTime?        @db.DateTime
+  Id_Usuario_Registro     Int?
+  Id_Usuario_Modificacion Int?
+  Id_Puerto               Int?
+  Estado                  Boolean?
+  Puerto_Dinstar          Puerto_Dinstar?  @relation(fields: [Id_Puerto], references: [Id_Puerto], onDelete: NoAction, onUpdate: NoAction, map: "fk_Dinstar_SMS_Puerto")
+  Tipo_Estado_sms         Tipo_Estado_sms? @relation(fields: [Id_Tipo_Estado_sms], references: [Id_Tipo_Estado_sms], onDelete: NoAction, onUpdate: NoAction, map: "fk_Id_Tipo_Estado_sms")
+  Procesos_Datos          Procesos_Datos?  @relation(fields: [Id_Proceso_Datos], references: [Id_Proceso_Datos], onDelete: NoAction, onUpdate: NoAction, map: "fk_Proceso_Datos")
+}
+
+model Dinstar_Mensajes_sms_bk {
+  Id_Dinstar_Mensajes_sms BigInt           @id(map: "PK__Dinstar___F60CE13F7DBD3E19") @default(autoincrement())
+  Telefono                String?          @db.VarChar(15)
+  Texto                   String?          @db.VarChar(250)
+  Id_Proceso_Datos        Int?
+  Id_Tipo_Estado_sms      Int?             @db.SmallInt
+  TaskId                  String?          @db.VarChar(50)
+  Fecha_Registro          DateTime?        @db.DateTime
+  Fecha_Cambio_Estado     DateTime?        @db.DateTime
+  Fecha_Modificacion      DateTime?        @db.DateTime
+  Id_Usuario_Registro     Int?
+  Id_Usuario_Modificacion Int?
+  Id_Puerto               Int?
+  Puerto_Dinstar          Puerto_Dinstar?  @relation(fields: [Id_Puerto], references: [Id_Puerto], onDelete: NoAction, onUpdate: NoAction, map: "fk_Dinstar_SMS_Puerto_bk")
+  Tipo_Estado_sms         Tipo_Estado_sms? @relation(fields: [Id_Tipo_Estado_sms], references: [Id_Tipo_Estado_sms], onDelete: NoAction, onUpdate: NoAction, map: "fk_Id_Tipo_Estado_sms_bk")
+  Procesos_Datos          Procesos_Datos?  @relation(fields: [Id_Proceso_Datos], references: [Id_Proceso_Datos], onDelete: NoAction, onUpdate: NoAction, map: "fk_Proceso_Datos_bk")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model Dinstar_sms_inbox {
+  Id_Dinstar_sms_inbox BigInt    @default(autoincrement())
+  Incoming_sms_id      Int?
+  Port                 Int?
+  Number               String?   @db.VarChar(20)
+  Smsc                 String?   @db.VarChar(20)
+  Timestamp            DateTime? @db.DateTime
+  Texto                String?   @db.VarChar(300)
+  Imsi                 String?   @db.VarChar(25)
+  FechaRegistro        DateTime? @db.DateTime
+  FechaModificacion    DateTime? @db.DateTime
+
+  @@ignore
+}
+
+model Procesos_Datos {
+  Id_Proceso_Datos        Int                       @id(map: "PK__Procesos__95123BC33CE62AF4") @default(autoincrement())
+  Nombre_Archivo          String?                   @db.VarChar(50)
+  Id_Usuario              Int?
+  Path                    String?                   @db.VarChar(150)
+  Cantidad_Elementos      Int?
+  Id_Unidad_Negocio       Int?
+  Id_Categoria            BigInt?
+  Id_Tipo_Estado          BigInt?
+  Estado                  Boolean?
+  Fecha_Inicio            DateTime?                 @db.DateTime
+  Fecha_Finalizacion      DateTime?                 @db.DateTime
+  Fecha_Registro          DateTime?                 @db.DateTime
+  Fecha_Modificacion      DateTime?                 @db.DateTime
+  Id_Usuario_Registro     Int?
+  Id_Usuario_Modificacion Int?
+  Categorias              Categorias?               @relation(fields: [Id_Categoria], references: [Id_Categoria], onDelete: NoAction, onUpdate: NoAction, map: "fk_IdCategoria")
+  Tipo_Estado             Tipo_Estado?              @relation(fields: [Id_Tipo_Estado], references: [Id_Tipo_Estado], onDelete: NoAction, onUpdate: NoAction, map: "fk_IdTipoEstado")
+  Unidad_Negocios         Unidad_Negocios?          @relation(fields: [Id_Unidad_Negocio], references: [Id_Unidad_Negocio], onDelete: NoAction, onUpdate: NoAction, map: "fk_IdUnidad_Negocio2")
+  Dinstar_Mensajes_sms    Dinstar_Mensajes_sms[]
+  Dinstar_Mensajes_sms_bk Dinstar_Mensajes_sms_bk[]
+}
+
+model Puerto_Dinstar {
+  Id_Puerto               Int                       @id(map: "PK__Puerto_D__71FC9FAA0F58312B")
+  Puerto                  Int?
+  CantidadSMS             Int?
+  Telefono                String?                   @db.VarChar(10)
+  Id_Dinstar              Int?                      @db.SmallInt
+  Estado                  Boolean?
+  Predeterminado          Boolean?
+  Fecha_Registro          DateTime?                 @db.DateTime
+  Fecha_Modificacion      DateTime?                 @db.DateTime
+  Id_Usuario_Registro     Int?
+  Id_Usuario_Modificacion Int?
+  cantidadSMSmes          Int?
+  Dinstar_Mensajes_sms    Dinstar_Mensajes_sms[]
+  Dinstar_Mensajes_sms_bk Dinstar_Mensajes_sms_bk[]
+}
+
+model Request {
+  Id_Request         Int       @id(map: "PK__Request__C31073CF61E5BAF8") @db.SmallInt
+  Descripcion        String?   @db.VarChar(25)
+  Estado             Boolean?
+  Fecha_Registro     DateTime? @db.DateTime
+  Fecha_Modificacion DateTime? @db.DateTime
+  Dinstar            Dinstar[] @ignore
+}
+
+model Tipo_Estado {
+  Id_Tipo_Estado          BigInt           @id(map: "PK__Tipo_Est__3DC1ADB9D9DF3B12")
+  Descripcion             String?          @db.VarChar(25)
+  Estado                  Boolean?
+  Fecha_Registro          DateTime?        @db.DateTime
+  Fecha_Modificacion      DateTime?        @db.DateTime
+  Id_Usuario_Registro     Int?
+  Id_Usuario_Modificacion Int?
+  Procesos_Datos          Procesos_Datos[]
+}
+
+model Tipo_Estado_sms {
+  Id_Tipo_Estado_sms      Int                       @id(map: "PK__Tipo_Est__16666C2723D004C1") @default(autoincrement()) @db.SmallInt
+  Descripcion             String?                   @db.VarChar(50)
+  Estado                  Int?
+  Fecha_Registro          DateTime?                 @db.DateTime
+  Fecha_Modificacion      DateTime?                 @db.DateTime
+  Dinstar_Mensajes_sms    Dinstar_Mensajes_sms[]
+  Dinstar_Mensajes_sms_bk Dinstar_Mensajes_sms_bk[]
+}
+
+model Unidad_Negocios {
+  Id_Unidad_Negocio       Int              @id(map: "PK__Unidad_N__1993855DA05F6BB6") @default(autoincrement())
+  Nombre                  String?          @db.VarChar(25)
+  NombreCorto             String?          @db.VarChar(20)
+  Estado                  Boolean?
+  Fecha_Registro          DateTime?        @db.DateTime
+  Fecha_Modificacion      DateTime?        @db.DateTime
+  Id_Usuario_Registro     Int?
+  Id_Usuario_Modificacion Int?
+  Procesos_Datos          Procesos_Datos[]
+}
